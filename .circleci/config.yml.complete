@@ -1,0 +1,285 @@
+# Getting started with CircleCI
+# https://circleci.com/docs/2.0/first-steps/
+#
+# .circleci/config.yml
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:9.5.0-stretch
+
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+             sudo apt-get update && sudo apt-get install -y curl 
+             mkdir -p /tmp/test-results/
+             
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+
+      - setup_remote_docker
+
+      - checkout
+
+      - run:
+          name: Start App Container
+          #http://172.17.0.1:8000
+          command: |
+             set -x
+             docker-compose version
+             docker-compose up -d
+
+      # OWASP ModSecurity Core Rule Set Container (Apache Reverse Proxy)
+      # franbuehler/modsecurity-crs-rp
+      # Environment variables:
+      # PARANOIA:   paranoia_level
+      # ANOMALYIN:  inbound_anomaly_score_threshold
+      # ANOMALYOUT: outbound_anomaly_score_threshold 
+      # See https://coreruleset.org/
+      #
+      # BACKEND:    application backend
+      # PORT:       listening port of apache, this port must be exposed: --expose
+      - run:
+           name: Start OWASP ModSecurity CRS Container in front of application for application tests
+           #http://172.17.0.2:8001
+           #we set inbound and outbound anomaly score to 1, no tolerance
+           command: |
+             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
+             docker pull franbuehler/modsecurity-crs-rp && \
+             docker run -dt --name apachecrstc -e PARANOIA=2 -e \
+             ANOMALYIN=1 -e ANOMALYOUT=1 -e BACKEND=http://172.17.0.1:8000 \
+             -e PORT=8001 --expose 8001 franbuehler/modsecurity-crs-rp
+
+             #docker run -dt --name apachecrs franbuehler/modsecurity-crs-rp
+             
+#      - run:
+#           name: Start OWASP ModSecurity CRS Container in front of application for mean application tests
+#           #http://172.17.0.3:8002
+#           #we set inbound and outbound anomaly score to 1, no tolerance
+#           command: |
+#             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
+#             docker pull franbuehler/modsecurity-crs-rp && \
+#             docker run -dt --name apachecrsmeantc -e PARANOIA=2 -e \
+#             ANOMALYIN=100 -e ANOMALYOUT=100 -e BACKEND=http://172.17.0.1:8000 \
+#             -e PORT=8002 --expose 8002 franbuehler/modsecurity-crs-rp
+
+#      - run:
+#           name: Start OWASP ModSecurity CRS Container in front of API for ZAP Scan
+#           #http://172.17.0.4:8003
+#           command: |
+#             docker run -dt --name apachecrsapi -e PARANOIA=1 -e \
+#             ANOMALYIN=1 -e ANOMALYOUT=1 -e BACKEND=http://172.17.0.1:8090 \
+#             -e PORT=8003 --expose 8003 franbuehler/modsecurity-crs-rp
+
+#      - run:
+#           name: Start OWASP ModSecurity CRS Container in front of application for ZAP Active Scan
+#           #http://172.17.0.4:8003
+#           #we set inbound and outbound anomaly score to 100, we want to see all errors
+#           command: |
+#             docker run -dt --name apachecrsactive -e PARANOIA=4 -e \
+#             ANOMALYIN=1 -e ANOMALYOUT=1 -e BACKEND=http://172.17.0.1:8000 \
+#             -e PORT=8003 --expose 8003 franbuehler/modsecurity-crs-rp
+
+      # ModSecurity Tuning:
+      # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
+      # We use rule exclusion example files:
+      # REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf OR
+      # RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+      - run:
+          name: ModSecurity Tuning - Load rule exclusions
+          command: |
+            # rule 920350 (msg: Host header is a numeric IP address) triggers, 
+            # because we use IP addresses instead of hostnames.
+            # This rule must not be excluded in production!
+            printf "\nSecRuleRemoveById 920350\n" > tmp.conf
+            # CRS container for application tests:
+            docker cp tmp.conf apachecrstc:/etc/httpd/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+            docker exec apachecrstc /usr/sbin/httpd -k graceful
+            # CRS container for application tests:
+#            docker cp tmp.conf apachecrsmeantc:/etc/httpd/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+#            docker exec apachecrsmeantc /usr/sbin/httpd -k graceful
+            # CRS container for ZAP API Scan:
+#            docker cp tmp.conf apachecrsapi:/etc/httpd/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+#            docker exec apachecrsapi /usr/sbin/httpd -k graceful
+            # CRS container for ZAP Scan:
+#            docker cp tmp.conf apachecrsactive:/etc/httpd/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+#            docker exec apachecrsactive /usr/sbin/httpd -k graceful
+#
+#            Examples:
+#            printf "\nSecRuleUpdateTargetById 942420 \"!REQUEST_COOKIES:session\"\n" > tmp.conf
+#            printf "\nSecRuleUpdateTargetById 942440 \"!REQUEST_COOKIES:session\"\n" > tmp.conf
+#
+#      - run:
+#          name: ZAP Baseline Scan of application (without CRS)
+#          command: |
+#             (
+#             docker pull owasp/zap2docker-weekly && \
+#             docker run -t owasp/zap2docker-weekly zap-baseline.py \
+#                -t http://172.17.0.1:8000/ -l WARN || \
+#              if [ $? -ne 1 ]; then exit 0; else exit 1; fi;
+#             )
+
+#      # https://hub.docker.com/r/ictu/zap2docker-weekly/
+#      # This Active Scan has to be developed: a custom config_file and context file
+#      # This Active Scan takes about 3,5 minutes to run
+#      - run:
+#          name: ZAP Active Scan of application (without CRS)
+#          command: |
+#             (
+#             docker pull ictu/zap2docker-weekly && \
+#             docker run -t ictu/zap2docker-weekly zap-baseline-custom.py \
+#                -t http://172.17.0.1:8000/ -l WARN -m 5 \
+#                --active_scan \
+#                --auth_loginurl http://172.17.0.1:8000/login \
+#                --auth_usernamefield user --auth_passwordfield pass \
+#                --auth_auto --auth_username pixiadmin --auth_password adminpixi || \
+#                # we know this is an insecure application:
+#                exit 0
+#                #if [ $? -ne 1 ]; then exit 0; else exit 1; fi;
+#              )
+#
+#      # https://hub.docker.com/r/ictu/zap2docker-weekly/
+#      # This Active Scan has to be developed: a custom config_file and context file
+#      # This Active Scan takes about 3,5 minutes to run
+#      - run:
+#          name: ZAP active scan of application with CRS
+#          # Only fail on error code 1, which indicates at least one FAIL was found.
+#          # error codes 2 & 3 indicate WARN or other, and should not break the run
+#             #               -u https://raw.githubusercontent.com/${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}/master/zap-baseline.conf \
+#          command: |
+#             (
+#             docker pull ictu/zap2docker-weekly && \
+#             docker run -t ictu/zap2docker-weekly zap-baseline-custom.py \
+#                -t http://172.17.0.4:8003/ -l WARN -m 5 \
+#                --active_scan \
+#                --auth_loginurl http://172.17.0.4:8003/login \
+#                --auth_usernamefield user --auth_passwordfield pass \
+#                --auth_auto --auth_username pixiadmin --auth_password adminpixi || \
+#                # we know this is an insecure application:
+#                exit 0
+#                )
+
+       # Debugging possibilities:
+#      - run:
+#          name: curl test
+#          command: |
+#             (
+#             docker pull hiromasaono/curl && \
+#             docker run -dt --name curl hiromasaono/curl && \
+#             docker exec -ti curl curl http://172.17.0.1:8000/register
+#             docker exec -ti curl curl http://172.17.0.2:8001/register
+#             docker exec -ti apachecrs cat /etc/httpd/logs/error.log
+#             docker exec -ti apachecrs curl 172.17.0.1:8000
+#             )
+#
+      # A zap-api.conf could be developed
+#      - run:
+#          name: ZAP API scan of application (without CRS)
+#          command: |
+#             (
+#             docker pull owasp/zap2docker-weekly && \
+#             docker run -t owasp/zap2docker-weekly zap-api-scan.py \
+#                -u https://raw.githubusercontent.com/franbuehler/pixi-crs/master/zap-api.conf?token=AQ6RVdBQnWmIHjOULcbaM-1untbAtqkkks5aoZmqwA \
+#                -f openapi -l WARN \
+#                -t http://172.17.0.1:8090/swagger.json \
+#                -z "config formhandler.fields.field\(0\).fieldId=user" \
+#                -z "config formhandler.fields.field\(0\).value=test@pixi.owasp" \
+#                -z "config formhandler.fields.field\(0\).enabled=true" \
+#                -z "config formhandler.fields.field\(1\).fieldId=pass" \
+#                -z "config formhandler.fields.field\(1\).value=testpass" \
+#                -z "config formhandler.fields.field\(1\).enabled=true" || \
+#                # we know this is an insecure application:
+#                exit 0
+#              )
+#
+      # A zap-api.conf could be developed
+#      - run:
+#          name: ZAP API scan of application with CRS
+#          command: |
+#             (
+#             docker pull owasp/zap2docker-weekly && \
+#             docker run -t owasp/zap2docker-weekly zap-api-scan.py \
+#                -u https://raw.githubusercontent.com/franbuehler/pixi-crs/master/zap-api.conf?token=AQ6RVdBQnWmIHjOULcbaM-1untbAtqkkks5aoZmqwA \
+#                -f openapi -l WARN \
+#                -t http://172.17.0.4:8003/swagger.json \
+#                -z "config formhandler.fields.field\(0\).fieldId=user" \
+#                -z "config formhandler.fields.field\(0\).value=test@pixi.owasp" \
+#                -z "config formhandler.fields.field\(0\).enabled=true" \
+#                -z "config formhandler.fields.field\(1\).fieldId=pass" \
+#                -z "config formhandler.fields.field\(1\).value=testpass" \
+#                -z "config formhandler.fields.field\(1\).enabled=true" || \
+#                if [ $? -ne 1 ]; then exit 0; else exit 1; fi;
+#              )
+
+      - run:
+          name: Application Tests with Testcafe
+          command: |
+             # https://circleci.com/docs/2.0/building-docker-images/#mounting-folders
+             # creating dummy container which will hold a volume with config
+             docker create -v /tests --name configs alpine:latest /bin/true
+             # copying config file into this volume
+             docker cp /home/circleci/project/testcafe/tests/test.js configs:/tests
+             #docker cp /home/circleci/project/testcafe/tests/mongodb.js configs:/tests
+             # starting application container using this volume
+             docker pull testcafe/testcafe
+             # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
+             docker run --volumes-from configs:rw --name testcafe -it testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox' /tests/test.js #/tests/mongodb.js
+#             docker cp testcafe:/tmp/res.xml /tmp/test-results/
+#            docker run --volumes-from configs:rw --name testcafe -it testcafe/testcafe --reporter xunit:/tmp/res.xml --skip-js-errors 'chromium:headless --no-sandbox' /tests/test.js /tests/mongodb.js
+
+      - run:
+          name: Application Tests with CRS with Testcafe
+          command: |
+             docker cp /home/circleci/project/testcafe/tests/testcrs.js configs:/tests
+             #docker cp /home/circleci/project/testcafe/tests/mongodbcrs.js configs:/tests
+             # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
+             docker run --volumes-from configs:rw --name testcafecrs -it testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox' /tests/testcrs.js #/tests/mongodbcrs.js
+#            docker cp testcafe:/tmp/res.xml /tmp/test-results/
+#            docker run -v /home/circleci/project/testcafe/tests:/tests -it testcafe/testcafe chrome /tests/testcrs.js --skip-js-errors --reporter xunit:/tmp/test-results/res.xml
+
+      - run:
+          # Fail if ModSecurity log is not empty
+          name: Show ModSecurity logs of Testcafe Tests
+          command: |
+              docker exec apachecrstc cat /etc/httpd/logs/error.log 
+              #| grep ModSecurity | grep msg | tee /tmp/test-results/ModSecurity-Testcafe.log || \
+              #              if [ $? -eq 1 ]; then echo "No ModSecurity rule matched, that is ok!"; exit 0; fi;
+              # If not empty -> Repair your application OR
+              #              -> ModSecurity Tuning:
+              # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
+              #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
+          # we always want to see this step:        
+          when: always
+
+#      - run:
+#          name: Show ModSecurity logs of mean Testcafe Tests
+#          command: |
+#              docker exec apachecrsmeantc cat /etc/httpd/logs/error.log
+#              #| grep ModSecurity | grep msg | tee /tmp/test-results/ModSecurity-Testcafe.log || \
+#              #              if [ $? -eq 1 ]; then echo "No ModSecurity rule matched, that is ok!"; exit 0; fi;
+#          # we always want to see this step:        
+#          when: always
+
+#      - run:
+#          name: Show ModSecurity logs of ZAP API Scan
+#          command: |
+#              docker exec apachecrsapi cat /etc/httpd/logs/error.log | grep -o -E " (at|against) .*\[file.*\[id \"[0-9]+.*\[msg \"[^\"]+" | tr -d \" | sed -e "s/ at the end of input at/ at/" -e "s/ required. /. /" -e "s/\[rev .*\[msg/[msg/" -e "s/\. / /" -e "s/(Total .*/(Total ...) .../" | tr -d \] | cut -d\  -f3,9,11- | sed -e "s/^\([^ ]*\) \([^ ]*\)/\2 \1/" | awk "{ printf \"%+6s %-35s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n\", \$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10, \$11, \$12, \$13, \$14, \$15, \$16, \$17, \$18, \$19, \$20 }" | sed -e "s/\ *$//" | sort | uniq -c | sort -n | tee /tmp/test-results/ModSecurity-ZAP-api-scan.log || \
+#              if [ $? -eq 1 ]; then echo "Empty or not existing ModSecurity log from ZAP API scan"; exit 1; else exit 0; fi;
+#          # we always want to see this step:        
+#          when: always
+
+#      - run:
+#          name: Show ModSecurity logs of ZAP Active Scan
+#          command: |
+#              docker exec apachecrsactive cat /etc/httpd/logs/error.log | grep -o -E " (at|against) .*\[file.*\[id \"[0-9]+.*\[msg \"[^\"]+" | tr -d \" | sed -e "s/ at the end of input at/ at/" -e "s/ required. /. /" -e "s/\[rev .*\[msg/[msg/" -e "s/\. / /" -e "s/(Total .*/(Total ...) .../" | tr -d \] | cut -d\  -f3,9,11- | sed -e "s/^\([^ ]*\) \([^ ]*\)/\2 \1/" | awk "{ printf \"%+6s %-35s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s\n\", \$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8, \$9, \$10, \$11, \$12, \$13, \$14, \$15, \$16, \$17, \$18, \$19, \$20 }" | sed -e "s/\ *$//" | sort | uniq -c | sort -n | tee /tmp/test-results/ModSecurity-ZAP-active-scan.log || \
+#              if [ $? -eq 1 ]; then echo "Empty or not existing ModSecurity log from ZAP Active scan"; exit 1; else exit 0; fi;
+#          # we always want to see this step:        
+#          when: always
+
+      - store_test_results:
+           path: /tmp/test-results 
