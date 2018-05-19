@@ -49,7 +49,6 @@ jobs:
            #http://172.17.0.2:8001
            #we set inbound and outbound anomaly score to 1, no tolerance
            command: |
-             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
              docker pull franbuehler/modsecurity-crs-rp && \
              docker run -dt --name apachecrstc -e PARANOIA=2 -e \
              ANOMALYIN=1 -e ANOMALYOUT=1 -e BACKEND=http://172.17.0.1:8000 \
