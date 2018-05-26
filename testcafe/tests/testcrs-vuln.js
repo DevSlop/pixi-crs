@@ -25,7 +25,7 @@ test('Search Reflected XSS String WITH CRS', async t => {
         //After login we search for <script>alert('hi')</script>
         .typeText('#search_query', '<script>alert("hi")</script>')
         .pressKey('enter')
-        console.log('Testcase 3 - ' + Selector('#uniqueid').textContent + '\n');
+        console.log('Testcase 3 - ' + ('#uniqueid').textContent + '\n');
 });
 
 // Test Nr. 4. Find the Angular Constructor XSS attack
