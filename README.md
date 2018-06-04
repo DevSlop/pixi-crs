@@ -2,6 +2,7 @@
 
 This branch tests the known vulnerabilities of Pixi known from [this workshop](http://prezo.s3.amazonaws.com/pixi_california_2018/pixi_lab.md) and checks if the OWASP ModSecurity Core Rule Set catches the attacks.
 
+
 ## Tests
 
 ### Test Nr. 3. Find the Reflected XSS attack
