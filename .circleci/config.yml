@@ -142,7 +142,7 @@ jobs:
           name: Search for WAF Test String "My evil WAF Test" in ModSecurity logs
           command: |
               docker exec apachecrstc cat /etc/httpd/logs/error.log \
-              | grep ModSecurity | grep "My evil WAF Test1"
+              | grep ModSecurity | grep "My evil WAF Test"
               # If empty -> WAF Test String <script>alert(My evil WAF Test)</script>
               # did not trigger a CRS rule. 
               # That means CRS is not working properly or test was aborted.
