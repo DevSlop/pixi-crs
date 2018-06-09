@@ -136,12 +136,12 @@ jobs:
 
       - run:
           # Fail if ModSecurity does not contain WAF Test String "My evil WAF Test"
+          # '<script>alert("My evil WAF Test")</script>'
           name: Show ModSecurity logs of Testcafe Tests
           command: |
               docker exec apachecrstc cat /etc/httpd/logs/error.log \
-              | grep ModSecurity | grep "My evil WAF Test"
-
-              # If not empty -> Repair your application OR
+              | grep ModSecurity | grep "My evil WAF Test1"
+              # If empty -> WAF Test String "
               #              -> ModSecurity Tuning:
               # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
               #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
