@@ -69,8 +69,10 @@ jobs:
             printf '# This rule must not be excluded in production!\n' >> tmp.conf
             printf '\nSecRuleRemoveById 920350\n\n' >> tmp.conf
             printf '# Rule 942440 (msg: SQL Comment Sequence Detected) and,\n' >> tmp.conf
-            printf '# Rule 942450 (msg: SQL Hex Encoding Identified) trigger,\n' >> tmp.conf
+            printf '# Rule 942450 (msg: SQL Hex Encoding Identified) and,\n' >> tmp.conf
+            printf '# Rule 942100 (msg: SQL Injection Attack Detected via libinjection) trigger,\n' >> tmp.conf
             printf '# because of random characters in the session cookie.\n' >> tmp.conf
+            printf '\nSecRuleUpdateTargetById 942100 "!REQUEST_COOKIES:session"\n' >> tmp.conf
             printf '\nSecRuleUpdateTargetById 942440 "!REQUEST_COOKIES:session"\n' >> tmp.conf
             printf '\nSecRuleUpdateTargetById 942450 "!REQUEST_COOKIES:session"\n' >> tmp.conf
             # CRS container for application tests:
