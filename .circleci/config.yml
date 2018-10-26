@@ -77,7 +77,7 @@ jobs:
             printf '\nSecRuleUpdateTargetById 942450 "!REQUEST_COOKIES:session"\n' >> tmp.conf
             # CRS container for application tests:
             docker cp tmp.conf apachecrstc:/etc/apache2/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
-            docker exec apachecrstc apachectl -k graceful
+            docker exec apachecrstc /usr/sbin/apachectl -f /etc/apache2/conf/httpd.conf -k graceful
 
        # Debugging possibilities:
 #      - run:
