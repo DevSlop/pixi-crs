@@ -76,8 +76,8 @@ jobs:
             printf '\nSecRuleUpdateTargetById 942440 "!REQUEST_COOKIES:session"\n' >> tmp.conf
             printf '\nSecRuleUpdateTargetById 942450 "!REQUEST_COOKIES:session"\n' >> tmp.conf
             # CRS container for application tests:
-            docker cp tmp.conf apachecrstc:/etc/httpd/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
-            docker exec apachecrstc /usr/sbin/httpd -k graceful
+            docker cp tmp.conf apachecrstc:/etc/apache2/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+            docker exec apachecrstc apachectl -k graceful
 
        # Debugging possibilities:
 #      - run:
@@ -88,7 +88,7 @@ jobs:
 #             docker run -dt --name curl hiromasaono/curl && \
 #             docker exec -ti curl curl http://172.17.0.1:8000/register
 #             docker exec -ti curl curl http://172.17.0.2:8001/register
-#             docker exec -ti apachecrs cat /etc/httpd/logs/error.log
+#             docker exec -ti apachecrs cat /var/log/apache2/error.log
 #             docker exec -ti apachecrs curl 172.17.0.1:8000
 #             )
 #
@@ -125,7 +125,7 @@ jobs:
           # Fail if ModSecurity log is not empty
           name: Show ModSecurity logs of Testcafe Tests
           command: |
-              docker exec apachecrstc cat /etc/httpd/logs/error.log \
+              docker exec apachecrstc cat /var/log/apache2/error.log \
               | grep ModSecurity | grep -vi "My evil WAF Test" | grep -v " Score: 30" | grep msg && exit 1 || exit 0
 
               # If not empty -> Repair your application OR
@@ -141,7 +141,7 @@ jobs:
           # '<script>alert("My evil WAF Test")</script>'
           name: Search for WAF Test String "My evil WAF Test" in ModSecurity logs
           command: |
-              docker exec apachecrstc cat /etc/httpd/logs/error.log \
+              docker exec apachecrstc cat /var/log/apache2/error.log \
               | grep ModSecurity | grep "My evil WAF Test"
               # If empty -> WAF Test String <script>alert(My evil WAF Test)</script>
               # did not trigger a CRS rule. 
