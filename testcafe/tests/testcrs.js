@@ -27,7 +27,7 @@ test('Search String WITH CRS', async t => {
         .typeText('input#pass', 'testpw')
         .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-8 > form > button')
         //After login we search for Lunch
-        .typeText('#search_query', '<script>alert("My evil WAF test")</script>')
+        .typeText('#search_query', '<script>alert("My evil WAF Test")</script>')
         .pressKey('enter')
         //.expect('body > div > div:nth-child(12) > div > div.card-deck')
 });
