@@ -78,3 +78,12 @@ test('Logout User WITH CRS', async t => {
         .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-8 > form > button')
         .click('body > div > div:nth-child(1) > div.col-md-7 > ul > li:nth-child(4) > a')
 });
+
+test('Repeat Login for Video', async t => {
+    await t
+        .typeText('input#email', 'testuser@pixi.owasp')
+        .typeText('input#password', 'testpw')
+        .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-8 > form > button')
+        //After registration the search pixi field should be there
+        //.expect('#search_query')
+});

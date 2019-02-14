@@ -122,6 +122,13 @@ jobs:
 #            docker run -v /home/circleci/project/testcafe/tests:/tests -it testcafe/testcafe chrome /tests/testcrs.js --skip-js-errors --reporter xunit:/tmp/test-results/res.xml
 
       - run:
+          name: WAF Tests with malicous request to test WAF itself
+          command: |
+             docker cp /home/circleci/project/testcafe/tests/testwaf.js configs:/tests
+             # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
+             docker run --volumes-from configs:rw --name testcafewaf -it testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox' /tests/testwaf.js 
+
+      - run:
           # Fail if ModSecurity log is not empty
           name: Show ModSecurity logs of Testcafe Tests
           command: |
