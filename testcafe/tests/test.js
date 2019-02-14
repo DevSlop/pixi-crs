@@ -1,3 +1,4 @@
+// Normal Pixi Application Tests against Pixi directly for CI Pipeline
 import { Selector } from 'testcafe';
 
 fixture`Getting Started`

@@ -1,3 +1,4 @@
+// Normal Pixi Application Tests against CRS for CI Pipeline
 import { Selector } from 'testcafe';
 
 fixture`Getting Started`
