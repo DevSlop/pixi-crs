@@ -58,18 +58,6 @@ test('Click My Profile and change Name WITH CRS', async t => {
         .pressKey('enter')
 });
 
-test('Search Malicious String WITH CRS to test WAF', async t => {
-    await t
-        .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-4 > a:nth-child(3) > button')
-        .typeText('input#user', 'testuser@pixi.owasp')
-        .typeText('input#pass', 'testpw')
-        .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-8 > form > button')
-        //After login we search for Lunch
-        .typeText('#search_query', '<script>alert("My evil WAF Test")</script>')
-        .pressKey('enter')
-        //.expect('body > div > div:nth-child(12) > div > div.card-deck')
-});
-
 test('Logout User WITH CRS', async t => {
     await t
         .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-4 > a:nth-child(3) > button')
