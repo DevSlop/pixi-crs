@@ -5,6 +5,9 @@ And it tests (TestCafe) DevSlop's vulnerable web application Pixi without and wi
 
 ## Further Reading
 
+### Explanation on https://devslop.co
+https://devslop.co/Home/Pixi_CRS
+
 ### Description of the CI Pipeline
 Core Rule Set as Part of DevOps:     
 https://coreruleset.org/20180619/the-core-rule-set-as-part-of-devops-ci-pipeline/
