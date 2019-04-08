@@ -21,7 +21,7 @@ test('Login User', async t => {
 	.click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-8 > form > button')
 });
 
-test('Search String in Search Box', async t => {
+/*test('Search String in Search Box', async t => {
     await t
 	.click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-4 > a:nth-child(3) > button')
         .typeText('input#user', 'testuser@pixi.owasp')
@@ -75,3 +75,5 @@ test('Repeat Login for Video', async t => {
         //After registration the search pixi field should be there
         //.expect('#search_query')
 });
+
+*/
