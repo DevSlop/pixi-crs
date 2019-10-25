@@ -52,10 +52,8 @@ jobs:
              docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
              docker run -dt --name apachecrstc -e PARANOIA=2 -e \
              ANOMALYIN=1 -e ANOMALYOUT=1 -e UPSTREAM=http://172.17.0.1:8000 \
-             --expose 443 franbuehler/modsecurity-crs:v3.2-modsec2-apache
+             --expose 443 owasp/modsecurity-crs:v3.2-modsec2-apache
 
-             #docker run -dt --name apachecrs franbuehler/modsecurity-crs-rp
-             
       # ModSecurity Tuning:
       # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
       # We use rule exclusion example files:
