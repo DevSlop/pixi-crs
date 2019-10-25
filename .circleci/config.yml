@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Install Docker Compose
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            curl -L https://github.com/docker/compose/releases/download/1.24.1/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
@@ -35,7 +35,7 @@ jobs:
              docker-compose up -d
 
       # OWASP ModSecurity Core Rule Set Container (Apache Reverse Proxy)
-      # franbuehler/modsecurity-crs-rp
+      # owasp/modsecurity-crs
       # Environment variables:
       # PARANOIA:   paranoia_level
       # ANOMALYIN:  inbound_anomaly_score_threshold
@@ -49,10 +49,10 @@ jobs:
            #http://172.17.0.2:8001
            #we set inbound and outbound anomaly score to 1, no tolerance
            command: |
-             docker pull franbuehler/modsecurity-crs-rp:v3.1 && \
+             docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
              docker run -dt --name apachecrstc -e PARANOIA=2 -e \
-             ANOMALYIN=1 -e ANOMALYOUT=1 -e BACKEND=http://172.17.0.1:8000 \
-             -e PORT=8001 --expose 8001 franbuehler/modsecurity-crs-rp:v3.1
+             ANOMALYIN=1 -e ANOMALYOUT=1 -e UPSTREAM=http://172.17.0.1:8000 \
+             --expose 443 franbuehler/modsecurity-crs:v3.2-modsec2-apache
 
              #docker run -dt --name apachecrs franbuehler/modsecurity-crs-rp
              
