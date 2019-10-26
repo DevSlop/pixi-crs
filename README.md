@@ -21,3 +21,6 @@ https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/v3.3/dev/util/docker/RE
 
 Also see tests of known vulnerabilities in Pixi [in this branch](https://github.com/DevSlop/pixi-crs/tree/test-pixi-vulnerabilities).
 
+### Blog Post about Pixi's vulnerabilities and the CRS
+https://coreruleset.org/20190909/how-the-crs-protects-the-vulnerable-web-application-pixi-by-owasp-devslop/
+
