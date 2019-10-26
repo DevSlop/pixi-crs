@@ -16,5 +16,8 @@ https://coreruleset.org/20180619/the-core-rule-set-as-part-of-devops-ci-pipeline
 Core Rule Set Docker Container:  
 https://coreruleset.org/20181212/core-rule-set-docker-image/
 
+### My franbuehler/modsecurity-crs-rp container has been integrated into the official OWASP Image: owasp/modsecurity-crs
+https://github.com/SpiderLabs/owasp-modsecurity-crs/blob/v3.3/dev/util/docker/README.md
+
 Also see tests of known vulnerabilities in Pixi [in this branch](https://github.com/DevSlop/pixi-crs/tree/test-pixi-vulnerabilities).
 
