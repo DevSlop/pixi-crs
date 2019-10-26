@@ -40,6 +40,7 @@ jobs:
       # PARANOIA:   paranoia_level
       # ANOMALYIN:  inbound_anomaly_score_threshold
       # ANOMALYOUT: outbound_anomaly_score_threshold 
+      # ALLOWED_METHODS: A string indicating the allowed_methods (Default: GET HEAD POST OPTIONS)
       # See https://coreruleset.org/
       #
       # PROXYLOCATION:    application backend
@@ -49,7 +50,8 @@ jobs:
            #we set inbound and outbound anomaly score to 1, no tolerance
            command: |
              docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
-             docker run -dt --name apachecrstc -e PARANOIA=2 -e \
+             docker run -dt --name apachecrstc -e PARANOIA=2 \
+             -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
              ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000/ \
              --expose 80 owasp/modsecurity-crs:v3.2-modsec2-apache
 

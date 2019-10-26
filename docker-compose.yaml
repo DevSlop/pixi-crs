@@ -4,15 +4,14 @@ services:
 
 # Comment in crs part if you want to add a WAF in front of Pixi:
 #  crs:
-#    image: franbuehler/modsecurity-crs-rp:v3.1
+#    image: owasp/modsecurity-crs:v3.2-modsec2-apache
 #    ports:
-#      - "8001:8001"
+#      - "80:80"
+#      - "443:443"
 #
 #    environment:
-#      # Listening Port of Apache Reverse Proxy
-#      - PORT=8001
 #      # Application Backend listens on port 8000 (IP: REPLACEME, but do not use localhost!)
-#      - BACKEND=http://192.168.1.104:8000
+#      - PROXYLOCATION=http://app:8000/
 #      # Paranoia Level
 #      - PARANOIA=1
 #      # Inbound and Outbound Anomaly Score Threshold
@@ -41,8 +40,8 @@ services:
 #
 #    # Volumes for ModSecurity Tuning when done with volumes:
 #    #volumes:
-#      #- ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/apache2/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
-#      #- ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/apache2/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+#      #- ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+#      #- ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
 #
 
   db:
