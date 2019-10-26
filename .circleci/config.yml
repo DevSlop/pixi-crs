@@ -42,11 +42,10 @@ jobs:
       # ANOMALYOUT: outbound_anomaly_score_threshold 
       # See https://coreruleset.org/
       #
-      # BACKEND:    application backend
-      # PORT:       listening port of apache, this port must be exposed: --expose
+      # UPSTREAM:    application backend
       - run:
            name: Start OWASP ModSecurity CRS Container in front of application for application tests
-           #http://172.17.0.2:8001
+           #http://172.17.0.2:443
            #we set inbound and outbound anomaly score to 1, no tolerance
            command: |
              docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
