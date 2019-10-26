@@ -32,6 +32,7 @@ test('Search String in Search Box WITH CRS', async t => {
         .pressKey('enter')
         //.expect('body > div > div:nth-child(12) > div > div.card-deck')
 });
+*/
 
 test('Click About WITH CRS', async t => {
     await t
@@ -75,4 +76,3 @@ test('Repeat Login for Video', async t => {
         //After registration the search pixi field should be there
         //.expect('#search_query')
 });
-*/
