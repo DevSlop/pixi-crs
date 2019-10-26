@@ -50,7 +50,7 @@ jobs:
            command: |
              docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
              docker run -dt --name apachecrstc -e PARANOIA=2 -e \
-             ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000 \
+             ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000/ \
              --expose 80 owasp/modsecurity-crs:v3.2-modsec2-apache
 
       # ModSecurity Tuning:
