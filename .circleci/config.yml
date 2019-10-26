@@ -114,7 +114,7 @@ jobs:
              # Some evil Mongo DB statements:
              # docker cp /home/circleci/project/testcafe/tests/mongodbcrs.js configs:/tests
              # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
-             docker run --volumes-from configs:rw --name testcafecrs -it testcafe/testcafe --skip-js-errors --ignore-certificate-errors 'chromium --no-sandbox' /tests/testcrs.js #/tests/testcrs-match.js /tests/mongodbcrs.js
+             docker run --volumes-from configs:rw --name testcafecrs -it testcafe/testcafe --skip-js-errors --ignore-certificate-errors 'chromium' /tests/testcrs.js #/tests/testcrs-match.js /tests/mongodbcrs.js
 #            docker cp testcafe:/tmp/res.xml /tmp/test-results/
 #            docker run -v /home/circleci/project/testcafe/tests:/tests -it testcafe/testcafe chrome /tests/testcrs.js --skip-js-errors --reporter xunit:/tmp/test-results/res.xml
 
