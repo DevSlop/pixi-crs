@@ -44,7 +44,6 @@ test('Click About WITH CRS', async t => {
         .click('body > div > div:nth-child(1) > div.col-md-7 > ul > li:nth-child(1) > a')
         //.expect('body > div > div:nth-child(12) > div > div.card-deck')
 });
-*/
 
 test('Click My Profile and change Name WITH CRS', async t => {
     await t
@@ -59,6 +58,7 @@ test('Click My Profile and change Name WITH CRS', async t => {
         .typeText('input#name', 'testuser')
         .pressKey('enter')
 });
+*/
 
 test('Logout User WITH CRS', async t => {
     await t

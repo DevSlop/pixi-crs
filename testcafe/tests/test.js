@@ -43,7 +43,6 @@ test('Click About', async t => {
         .click('body > div > div:nth-child(1) > div.col-md-7 > ul > li:nth-child(1) > a')
         //.expect('body > div > div:nth-child(12) > div > div.card-deck')
 });
-*/
 
 test('Click My Profile and change Name', async t => {
     await t
@@ -58,6 +57,7 @@ test('Click My Profile and change Name', async t => {
         .typeText('input#name', 'testuser')
         .pressKey('enter')
 });
+*/
 
 test('Logout User', async t => {
     await t
