@@ -1,4 +1,4 @@
-# pixi-crs - Integration of OWASP CRS into a CI Pipeline  
+# pixi-crs - Integration of OWASP CRS into a CI Pipeline     
 
 This repository integrates the WAF OWASP CRS into a CI Pipeline (Circle CI).  
 And it tests (TestCafe) DevSlop's vulnerable web application Pixi without and with the CRS.
