@@ -27,8 +27,8 @@ test('Search String in Search Box WITH CRS', async t => {
         .typeText('input#user', 'testuser@pixi.owasp')
         .typeText('input#pass', 'testpw')
         .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-8 > form > button')
-        //After login we search for Lunch
-//        .typeText('#search_query', '<script>alert("My evil DEMO")</script>')
+        //Evil demo, let step fail
+        .typeText('#search_query', '<script>alert("My evil DEMO")</script>')
         .pressKey('enter')
         //.expect('body > div > div:nth-child(12) > div > div.card-deck')
 });
