@@ -20,3 +20,6 @@ Also see tests of known vulnerabilities in Pixi [in this branch](https://github.
 ### Blog Post about Pixi's vulnerabilities and the CRS
 https://coreruleset.org/20190909/how-the-crs-protects-the-vulnerable-web-application-pixi-by-owasp-devslop/
 
+
+
+
