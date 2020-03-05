@@ -27,7 +27,7 @@ jobs:
       - checkout
 
       - run:
-          name: Start Application Pixi and CRS with docker-compose up
+          name: Start Application Pixi with docker-compose up
           #http://172.17.0.1:8000
           command: |
              set -x
@@ -45,7 +45,7 @@ jobs:
       #
       # PROXYLOCATION:    application backend
       - run:
-           name: Start OWASP ModSecurity CRS Container in front of application for application tests
+           name: Start OWASP ModSecurity CRS Container in front Pixi
            #http://172.17.0.2:443
            #we set inbound and outbound anomaly score to 1, no tolerance
            command: |
