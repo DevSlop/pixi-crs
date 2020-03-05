@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Start Application Pixi with docker-compose up
-          #http://172.17.0.1:8000
+          # http://172.17.0.1:8000
           command: |
              set -x
              docker-compose version
@@ -46,8 +46,9 @@ jobs:
       # PROXYLOCATION:    application backend
       - run:
            name: Start OWASP ModSecurity CRS Container in front Pixi
-           #http://172.17.0.2:443
-           #we set inbound and outbound anomaly score to 1, no tolerance
+           # http://172.17.0.2:443
+           # we set inbound and outbound anomaly score to 1, no tolerance
+           # We have to expose the port here, port mapping is not supported in CircleCI 
            command: |
              docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
              docker run -dt --name crs -e PARANOIA=2 \
@@ -129,15 +130,15 @@ jobs:
 
       - run:
           # Fail if ModSecurity log is not empty
+          # If not empty -> Repair your application OR
+          #              -> ModSecurity Tuning:
+          # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
+          #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
           name: Show ModSecurity logs of Testcafe Tests
           command: |
               docker exec crs cat /var/log/apache2/error.log \
               | grep ModSecurity | grep -vi "My evil WAF Test" | grep -v " Score: 30" | grep msg && exit 1 || exit 0
 
-              # If not empty -> Repair your application OR
-              #              -> ModSecurity Tuning:
-              # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
-              #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
               
           # we always want to see this step:        
           when: always
@@ -145,12 +146,12 @@ jobs:
       - run:
           # Fail if ModSecurity log does not contain WAF Test String "My evil WAF Test"
           # '<script>alert("My evil WAF Test")</script>'
+          # If empty -> WAF Test String <script>alert(My evil WAF Test)</script>
+          # did not trigger a CRS rule. 
+          # That means CRS is not working properly or test was aborted.
           name: Search for WAF Test String "My evil WAF Test" in ModSecurity logs
           command: |
               docker exec crs cat /var/log/apache2/error.log
-              # If empty -> WAF Test String <script>alert(My evil WAF Test)</script>
-              # did not trigger a CRS rule. 
-              # That means CRS is not working properly or test was aborted.
               
           # we always want to see this step:        
           when: always
