@@ -60,8 +60,8 @@ jobs:
       # We use rule exclusion example files:
       # REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf OR
       # RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
-#      - run:
-#          name: ModSecurity Tuning - Load rule exclusions
+      - run:
+          name: ModSecurity Tuning - Load rule exclusions
 #          command: |
 #            printf '# Rule 920350 (msg: Host header is a numeric IP address) triggers,\n' > tmp.conf
 #            printf '# because we use IP addresses instead of hostnames.\n' >> tmp.conf
