@@ -44,39 +44,39 @@ jobs:
       # See https://coreruleset.org/
       #
       # PROXYLOCATION:    application backend
-      - run:
-           name: Start OWASP ModSecurity CRS Container in front of application for application tests
-           #http://172.17.0.2:443
-           #we set inbound and outbound anomaly score to 1, no tolerance
-           command: |
-             docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
-             docker run -dt --name apachecrstc -e PARANOIA=2 \
-             -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
-             ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000/ \
-             --expose 80 owasp/modsecurity-crs:v3.2-modsec2-apache
+#      - run:
+#           name: Start OWASP ModSecurity CRS Container in front of application for application tests
+#           #http://172.17.0.2:443
+#           #we set inbound and outbound anomaly score to 1, no tolerance
+#           command: |
+#             docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
+#             docker run -dt --name apachecrstc -e PARANOIA=2 \
+#             -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
+#             ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000/ \
+#             --expose 80 owasp/modsecurity-crs:v3.2-modsec2-apache
 
       # ModSecurity Tuning:
       # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
       # We use rule exclusion example files:
       # REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf OR
       # RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
-      - run:
-          name: ModSecurity Tuning - Load rule exclusions
-          command: |
-            printf '# Rule 920350 (msg: Host header is a numeric IP address) triggers,\n' > tmp.conf
-            printf '# because we use IP addresses instead of hostnames.\n' >> tmp.conf
-            printf '# This rule must not be excluded in production!\n' >> tmp.conf
-            printf '\nSecRuleRemoveById 920350\n\n' >> tmp.conf
-            printf '# Rule 942440 (msg: SQL Comment Sequence Detected) and,\n' >> tmp.conf
-            printf '# Rule 942450 (msg: SQL Hex Encoding Identified) and,\n' >> tmp.conf
-            printf '# Rule 942100 (msg: SQL Injection Attack Detected via libinjection) trigger,\n' >> tmp.conf
-            printf '# because of random characters in the session cookie.\n' >> tmp.conf
-            printf '\nSecRuleUpdateTargetById 942100 "!REQUEST_COOKIES:session"\n' >> tmp.conf
-            printf '\nSecRuleUpdateTargetById 942440 "!REQUEST_COOKIES:session"\n' >> tmp.conf
-            printf '\nSecRuleUpdateTargetById 942450 "!REQUEST_COOKIES:session"\n' >> tmp.conf
-            # CRS container for application tests:
-            docker cp tmp.conf apachecrstc:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
-            docker exec apachecrstc /usr/local/apache2/bin/apachectl -f /usr/local/apache2/conf/httpd.conf -k graceful
+#      - run:
+#          name: ModSecurity Tuning - Load rule exclusions
+#          command: |
+#            printf '# Rule 920350 (msg: Host header is a numeric IP address) triggers,\n' > tmp.conf
+#            printf '# because we use IP addresses instead of hostnames.\n' >> tmp.conf
+#            printf '# This rule must not be excluded in production!\n' >> tmp.conf
+#            printf '\nSecRuleRemoveById 920350\n\n' >> tmp.conf
+#            printf '# Rule 942440 (msg: SQL Comment Sequence Detected) and,\n' >> tmp.conf
+#            printf '# Rule 942450 (msg: SQL Hex Encoding Identified) and,\n' >> tmp.conf
+#            printf '# Rule 942100 (msg: SQL Injection Attack Detected via libinjection) trigger,\n' >> tmp.conf
+#            printf '# because of random characters in the session cookie.\n' >> tmp.conf
+#            printf '\nSecRuleUpdateTargetById 942100 "!REQUEST_COOKIES:session"\n' >> tmp.conf
+#            printf '\nSecRuleUpdateTargetById 942440 "!REQUEST_COOKIES:session"\n' >> tmp.conf
+#            printf '\nSecRuleUpdateTargetById 942450 "!REQUEST_COOKIES:session"\n' >> tmp.conf
+#            # CRS container for application tests:
+#            docker cp tmp.conf crs:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+#            docker exec crs /usr/local/apache2/bin/apachectl -f /usr/local/apache2/conf/httpd.conf -k graceful
 
        # Debugging possibilities:
 #      - run:
@@ -131,7 +131,7 @@ jobs:
           # Fail if ModSecurity log is not empty
           name: Show ModSecurity logs of Testcafe Tests
           command: |
-              docker exec apachecrstc cat /var/log/apache2/error.log \
+              docker exec crs cat /var/log/apache2/error.log \
               | grep ModSecurity | grep -vi "My evil WAF Test" | grep -v " Score: 30" | grep msg && exit 1 || exit 0
 
               # If not empty -> Repair your application OR
@@ -147,7 +147,7 @@ jobs:
           # '<script>alert("My evil WAF Test")</script>'
           name: Search for WAF Test String "My evil WAF Test" in ModSecurity logs
           command: |
-              docker exec apachecrstc cat /var/log/apache2/error.log
+              docker exec crs cat /var/log/apache2/error.log
               # If empty -> WAF Test String <script>alert(My evil WAF Test)</script>
               # did not trigger a CRS rule. 
               # That means CRS is not working properly or test was aborted.
