@@ -62,7 +62,7 @@ jobs:
       # RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
       - run:
           name: ModSecurity Tuning - Load rule exclusions
-#          command: |
+          command: |
 #            printf '# Rule 920350 (msg: Host header is a numeric IP address) triggers,\n' > tmp.conf
 #            printf '# because we use IP addresses instead of hostnames.\n' >> tmp.conf
 #            printf '# This rule must not be excluded in production!\n' >> tmp.conf
