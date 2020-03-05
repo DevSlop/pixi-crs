@@ -46,7 +46,7 @@ jobs:
       # PROXYLOCATION:    application backend
       - run:
            name: Start OWASP ModSecurity CRS Container in front Pixi
-           # http://172.17.0.2:443
+           # http://172.17.0.2:80
            # we set inbound and outbound anomaly score to 1, no tolerance
            # We have to expose the port here, port mapping is not supported in CircleCI 
            command: |
@@ -61,6 +61,7 @@ jobs:
       # We use rule exclusion example files:
       # REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf OR
       # RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+      # We use cp command here because volumes are not supported in CircleCI
       - run:
           name: ModSecurity Tuning - Load rule exclusions
           command: |
