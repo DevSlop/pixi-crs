@@ -44,16 +44,16 @@ jobs:
       # See https://coreruleset.org/
       #
       # PROXYLOCATION:    application backend
-#      - run:
-#           name: Start OWASP ModSecurity CRS Container in front of application for application tests
-#           #http://172.17.0.2:443
-#           #we set inbound and outbound anomaly score to 1, no tolerance
-#           command: |
-#             docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
-#             docker run -dt --name apachecrstc -e PARANOIA=2 \
-#             -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
-#             ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000/ \
-#             --expose 80 owasp/modsecurity-crs:v3.2-modsec2-apache
+      - run:
+           name: Start OWASP ModSecurity CRS Container in front of application for application tests
+           #http://172.17.0.2:443
+           #we set inbound and outbound anomaly score to 1, no tolerance
+           command: |
+             docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
+             docker run -dt --name crs -e PARANOIA=2 \
+             -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
+             ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000/ \
+             --expose 8080 owasp/modsecurity-crs:v3.2-modsec2-apache
 
       # ModSecurity Tuning:
       # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
@@ -75,8 +75,8 @@ jobs:
 #            printf '\nSecRuleUpdateTargetById 942440 "!REQUEST_COOKIES:session"\n' >> tmp.conf
 #            printf '\nSecRuleUpdateTargetById 942450 "!REQUEST_COOKIES:session"\n' >> tmp.conf
 #            # CRS container for application tests:
-#            docker cp tmp.conf crs:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
-#            docker exec crs /usr/local/apache2/bin/apachectl -f /usr/local/apache2/conf/httpd.conf -k graceful
+            docker cp RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf crs:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+            docker exec crs /usr/local/apache2/bin/apachectl -f /usr/local/apache2/conf/httpd.conf -k graceful
 
        # Debugging possibilities:
 #      - run:
