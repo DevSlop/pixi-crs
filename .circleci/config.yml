@@ -27,7 +27,7 @@ jobs:
       - checkout
 
       - run:
-          name: Start App Container
+          name: Start Application Pixi and CRS with docker-compose up
           #http://172.17.0.1:8000
           command: |
              set -x
