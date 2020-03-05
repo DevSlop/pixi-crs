@@ -3,7 +3,7 @@ import { Selector } from 'testcafe';
 
 fixture`Getting Started`
 // Use 172.17.0.2 instead of 172.17.0.1 if crs is not started via docker-compose:
-    .page `http://172.17.0.2:8080/register`;
+    .page `http://172.17.0.2/register`;
 
 test('Register User WITH CRS', async t => {
     await t
