@@ -14,7 +14,7 @@ The CI Pipelines test (with TestCafe) DevSlop's vulnerable web application Pixi 
 
 By adding and testing the WAF in the Continuous Integration (CI) pipeline, we provide the application developer early feedback. The application developers get feedback about how their application will react when behind a WAF. We assure that Pixi’s legitimate traffic is not blocked by the WAF, and that illegitimate traffic is.
 
-## Building Blocks of the Pipelines and how they are implemented
+## Building Blocks of the pixi-crs Pipelines and how they are implemented
 
 |               | CircleCI             | AWS                   | GCP                   | Azure               |
 | ------------- | -------------------- | --------------------- | -------------         | ------------------- |
