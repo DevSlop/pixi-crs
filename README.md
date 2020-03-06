@@ -12,7 +12,7 @@ Currently the following Pipelines are implemented:
 
 The CI Pipelines test (with TestCafe) DevSlop's vulnerable web application Pixi without and with the CRS.
 
-By adding and testing the WAF in the Continuous Integration (CI) pipeline, we provide the application developer early feedback. The application developer gets feedback about how their application will react when behind a WAF. We assure that Pixi’s legitimate traffic is not blocked by the WAF, and that illegitimate traffic is.
+By adding and testing the WAF in the Continuous Integration (CI) pipeline, we provide the application developer early feedback. The application developers get feedback about how their application will react when behind a WAF. We assure that Pixi’s legitimate traffic is not blocked by the WAF, and that illegitimate traffic is.
 
 ## Building Blocks of the Pipelines and how they are implemented
 
@@ -20,10 +20,10 @@ By adding and testing the WAF in the Continuous Integration (CI) pipeline, we pr
 | ------------- | -------------------- | --------------------- | -------------         | ------------------- |
 | Code File     | .circleci/config.yml | buildspec.yml         | cloudbuild.yaml       | azure-pipelines.yml |
 | Start Pixi    | docker-compose up    | docker-compose up     | docker-compose up     | docker-compose up   |
-| Start CRS     | CRS Docker           | same docker-compose   | same docker-compose   | -              |
-| ModSec Tuning | docker cp            | Volume docker-compose | Volume docker-compose | -              |
-| Start Testcafe| Testcafe Docker      | npm install testcafe  | Testcafe Docker       | -              |
-| Log Analysis  | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | -       |
+| Start CRS     | CRS Docker           | same docker-compose   | same docker-compose   | coming soon         |
+| ModSec Tuning | docker cp            | Volume docker-compose | Volume docker-compose | coming soon         |
+| Start Testcafe| Testcafe Docker      | npm install testcafe  | Testcafe Docker       | coming soon         |
+| Log Analysis  | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | coming soon  |
 
 ## Further Reading
 
