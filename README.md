@@ -16,14 +16,14 @@ By adding and testing the WAF in the Continuous Integration (CI) pipeline, we pr
 
 ## Building Blocks of the Pipelines and how they are implemented
 
-|               | CircleCI      | AWS           | GCP           | Azure         |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
-| Code File     | .circleci/config.yml | buildspec.yml | cloudbuild.yaml | azure-pipelines.yml |
-| Start Pixi    |               |               |               |               |
-| Start CRS     |               |               |               |               |
-| ModSec Tuning |               |               |               |               |
-| Start Testcafe|               |               |               |               |
-| Log Analysis  |               |               |               |               |
+|               | CircleCI             | AWS                   | GCP                   | Azure               |
+| ------------- | -------------------- | --------------------- | -------------         | ------------------- |
+| Code File     | .circleci/config.yml | buildspec.yml         | cloudbuild.yaml       | azure-pipelines.yml |
+| Start Pixi    | docker-compose up    | docker-compose up     | docker-compose up     | docker-compose up   |
+| Start CRS     | CRS Docker           | same docker-compose   | same docker-compose   | -              |
+| ModSec Tuning | docker cp            | Volume docker-compose | Volume docker-compose | -              |
+| Start Testcafe| Testcafe Docker      | npm install testcafe  | Testcafe Docker       | -              |
+| Log Analysis  | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | -       |
 
 ## Further Reading
 
