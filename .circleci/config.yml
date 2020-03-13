@@ -32,7 +32,7 @@ jobs:
           command: |
              set -x
              docker-compose version
-             docker-compose up -d
+             docker-compose up -d -f docker-compose-without-crs.yaml
 
       # OWASP ModSecurity Core Rule Set Container (Apache Reverse Proxy)
       # owasp/modsecurity-crs
@@ -67,18 +67,6 @@ jobs:
           command: |
             docker cp RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf crs:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
             docker exec crs /usr/local/apache2/bin/apachectl -f /usr/local/apache2/conf/httpd.conf -k graceful
-#            printf '# Rule 920350 (msg: Host header is a numeric IP address) triggers,\n' > tmp.conf
-#            printf '# because we use IP addresses instead of hostnames.\n' >> tmp.conf
-#            printf '# This rule must not be excluded in production!\n' >> tmp.conf
-#            printf '\nSecRuleRemoveById 920350\n\n' >> tmp.conf
-#            printf '# Rule 942440 (msg: SQL Comment Sequence Detected) and,\n' >> tmp.conf
-#            printf '# Rule 942450 (msg: SQL Hex Encoding Identified) and,\n' >> tmp.conf
-#            printf '# Rule 942100 (msg: SQL Injection Attack Detected via libinjection) trigger,\n' >> tmp.conf
-#            printf '# because of random characters in the session cookie.\n' >> tmp.conf
-#            printf '\nSecRuleUpdateTargetById 942100 "!REQUEST_COOKIES:session"\n' >> tmp.conf
-#            printf '\nSecRuleUpdateTargetById 942440 "!REQUEST_COOKIES:session"\n' >> tmp.conf
-#            printf '\nSecRuleUpdateTargetById 942450 "!REQUEST_COOKIES:session"\n' >> tmp.conf
-#            # CRS container for application tests:
 
        # Debugging possibilities:
 #      - run:
@@ -100,7 +88,7 @@ jobs:
              # creating dummy container which will hold a volume with config
              docker create -v /tests --name configs alpine:latest /bin/true
              # copying config file into this volume
-             docker cp /home/circleci/project/testcafe/tests/test.js configs:/tests
+             docker cp /home/circleci/project/testcafe/tests_container_ip/test.js configs:/tests
              #docker cp /home/circleci/project/testcafe/tests/mongodb.js configs:/tests
              # starting application container using this volume
              docker pull testcafe/testcafe
@@ -112,7 +100,7 @@ jobs:
       - run:
           name: Application Tests with CRS with Testcafe
           command: |
-             docker cp /home/circleci/project/testcafe/tests/testcrs.js configs:/tests
+             docker cp /home/circleci/project/testcafe/tests_container_ip/testcrs.js configs:/tests
              # Intentionally trigger an error with a Testcafe Test that calls $select in ARGS_GET:
              # docker cp /home/circleci/project/testcafe/tests/testcrs-match.js configs:/tests
              # Some evil Mongo DB statements:
@@ -125,7 +113,7 @@ jobs:
       - run:
           name: WAF Tests with malicous request to test WAF itself
           command: |
-             docker cp /home/circleci/project/testcafe/tests/testwaf.js configs:/tests
+             docker cp /home/circleci/project/testcafe/tests_container_ip/testwaf.js configs:/tests
              # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
              docker run --volumes-from configs:rw --name testcafewaf -it testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox' /tests/testwaf.js 
 
