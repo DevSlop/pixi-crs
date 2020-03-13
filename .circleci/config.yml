@@ -88,7 +88,7 @@ jobs:
              # creating dummy container which will hold a volume with config
              docker create -v /tests --name configs alpine:latest /bin/true
              # copying config file into this volume
-             docker cp /home/circleci/project/testcafe/tests_container_ip/test.js configs:/tests
+             docker cp /home/circleci/project/testcafe/tests_container_ip2/test.js configs:/tests
              #docker cp /home/circleci/project/testcafe/tests/mongodb.js configs:/tests
              # starting application container using this volume
              docker pull testcafe/testcafe
@@ -100,7 +100,7 @@ jobs:
       - run:
           name: Application Tests with CRS with Testcafe
           command: |
-             docker cp /home/circleci/project/testcafe/tests_container_ip/testcrs.js configs:/tests
+             docker cp /home/circleci/project/testcafe/tests_container_ip2/testcrs.js configs:/tests
              # Intentionally trigger an error with a Testcafe Test that calls $select in ARGS_GET:
              # docker cp /home/circleci/project/testcafe/tests/testcrs-match.js configs:/tests
              # Some evil Mongo DB statements:
@@ -113,7 +113,7 @@ jobs:
       - run:
           name: WAF Tests with malicous request to test WAF itself
           command: |
-             docker cp /home/circleci/project/testcafe/tests_container_ip/testwaf.js configs:/tests
+             docker cp /home/circleci/project/testcafe/tests_container_ip2/testwaf.js configs:/tests
              # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
              docker run --volumes-from configs:rw --name testcafewaf -it testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox' /tests/testwaf.js 
 
