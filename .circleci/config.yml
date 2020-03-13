@@ -32,7 +32,7 @@ jobs:
           command: |
              set -x
              docker-compose version
-             docker-compose up -f docker-compose-without-crs.yaml -d
+             docker-compose -f docker-compose-without-crs.yaml up -d
 
       # OWASP ModSecurity Core Rule Set Container (Apache Reverse Proxy)
       # owasp/modsecurity-crs
