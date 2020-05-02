@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+
+# Comment in crs part if you want to add a WAF in front of Pixi:
+  crs:
+    image: owasp/modsecurity-crs:v3.2-modsec2-apache
+    container_name: crs
+    ports:
+# 443 is already in use
+      - "${CRSPORTHTTP}:80"
+      #- "8443:443" NOT USED FOR TESTS
+
+    environment:
+      # Application Backend listens on port 8000 (IP: REPLACEME, but do not use localhost!)
+      - PROXYLOCATION=${PROXYLOCATION}
+      # Paranoia Level
+      - PARANOIA=2
+      # Inbound and Outbound Anomaly Score Threshold
+      - ANOMALYIN=1
+      - ANOMALYOUT=1
+      # Executing Paranoia Level
+      # - EXECUTING_PARANOIA=2
+
+      # Various CRS Variables with Default Values
+      #- ENFORCE_BODYPROC_URLENCODED=1
+      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT
+      #- ALLOWED_REQUEST_CONTENT_TYPE=application/x-www-form-urlencoded|multipart/form-data|text/xml|application/xml|application/soap+xml|application/x-amf|application/json|application/octet-stream|text/plain
+      #- ALLOWED_REQUEST_CONTENT_TYPE_CHARSET=utf-8|iso-8859-1|iso-8859-15|windows-1252
+      #- ALLOWED_HTTP_VERSIONS=HTTP/1.0 HTTP/1.1 HTTP/2 HTTP/2.0
+      #- RESTRICTED_EXTENSIONS=.asa/ .asax/ .ascx/ .axd/ .backup/ .bak/ .bat/ .cdx/ .cer/ .cfg/ .cmd/ .com/ .config/ .conf/ .cs/ .csproj/ .csr/ .dat/ .db/ .dbf/ .dll/ .dos/ .htr/ .htw/ .ida/ .idc/ .idq/ .inc/ .ini/ .key/ .licx/ .lnk/ .log/ .mdb/ .old/ .pass/ .pdb/ .pol/ .printer/ .pwd/ .resources/ .resx/ .sql/ .sys/ .vb/ .vbs/ .vbproj/ .vsdisco/ .webinfo/ .xsd/ .xsx/
+      #- RESTRICTED_HEADERS=/proxy/ /lock-token/ /content-range/ /translate/ /if/
+      #- STATIC_EXTENSIONS=/.jpg/ /.jpeg/ /.png/ /.gif/ /.js/ /.css/ /.ico/ /.svg/ /.webp/
+
+      # CRS Variables with Default Value unlimited:
+      #- MAX_NUM_ARGS=255
+      #- ARG_NAME_LENGTH=100
+      #- ARG_LENGTH=400
+      #- TOTAL_ARG_LENGTH=64000
+      #- MAX_FILE_SIZE=1048576
+      #- COMBINED_FILE_SIZES=1048576
+
+    # Volumes for ModSecurity Tuning when done with volumes:
+    volumes:
+      #- ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+      - ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+
+
+  db:
+    image: deadrobots/pixi:datastore
+    container_name: pixidb
+    ports:
+      - "27017:27017"
+      - "28017:28017"
+
+  app:
+    image: deadrobots/pixi:app
+    container_name: pixi
+    ports:
+      - "8000:8000"
+      - "8090:8090"
+

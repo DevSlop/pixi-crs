@@ -1,0 +1,59 @@
+# Azure DevOps azure-pipelines.yml
+
+trigger:
+# Branch to trigger
+- master
+
+stages:
+
+# Start the OWASP ModSecurity Core Rule Set and Pixi with its DB with docker-compose
+# OWASP ModSecurity Core Rule Set Container (Apache Reverse Proxy)
+# owasp/modsecurity-crs
+# See https://coreruleset.org/
+# ModSecurity Tuning:
+# See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
+- stage: StartContainersAndTests
+  jobs:
+  - job: BuildJob
+    steps:
+      # Debugging
+      # - script: pwd
+      # - script: ls
+      - task: DockerCompose@0
+        displayName: Start Pixi and CRS
+        inputs:
+          containerregistrytype: 'Container Registry'
+          dockerComposeFile: '**/docker-compose.yaml'
+          action: 'Run a Docker Compose command'
+          dockerComposeFileArgs: |
+            CRSPORTHTTP=8080
+            PROXYLOCATION=http://app:8000/
+          dockerComposeCommand: 'up -d'
+
+      # Application Tests with Testcafe
+      # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
+      # Another way: https://devexpress.github.io/testcafe/documentation/continuous-integration/azure-devops.html
+      # Debugging
+      #- script: docker ps
+      - script: docker run --volume /home/vsts/work/1/s/testcafe/tests_container_ip/:/tests testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox'
+        displayName: Run Testcafe Tests without and with CRS
+
+      # Show Full error.log
+      - script: docker exec crs cat /var/log/apache2/error.log
+        displayName: Show ModSecurity logs
+
+      # ModSecurity Log Analysis:
+      # Fail if ModSecurity log is not empty
+      # Show ModSecurity logs of Testcafe Tests
+      # If not empty -> Repair your application OR
+      #              -> ModSecurity Tuning:
+      # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
+      #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
+      - script: if docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep -vi MyEvilWAFTest | grep -v 949110 | grep -v 980130 | grep msg; then echo "False Positive Found! Aborting!" && exit 1 ; else echo "ModSecurity Logs empty. This is good!"; fi
+        displayName: Fail if ModSecurity logs are not empty
+
+      # Fail if ModSecurity log does not contain WAF Test String "MyEvilWAFTest"
+      # That means CRS is not working properly or test was aborted.
+      - script: if docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep MyEvilWAFTest; then echo "WAF Test String Found. This is good!"; else echo "WAF Test String not Found! Aborting!" && exit 1; fi
+        displayName: Fail if WAF Test String is missing in ModSecurity logs
+
