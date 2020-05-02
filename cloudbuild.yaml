@@ -15,7 +15,7 @@ steps:
 #- name: 'ubuntu'
 #  args: [ "touch", "foo" ]
 #- name: 'ubuntu'
-#  args: [ "ls", "-l", "/workspace/testcafe/tests" ]
+#  args: [ "ls", "-l", "/workspace/testcafe/tests_container_ip" ]
 #- name: 'ubuntu'
 #  args: [ "pwd" ]
 # Debugging with curl
@@ -28,7 +28,7 @@ steps:
 # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
 - id: 'Run Testcafe Tests: Pixi without and with CRS'
   name: 'gcr.io/cloud-builders/docker'
-  args: [ "run", "--volume", "/workspace/testcafe/tests:/tests", "--rm", "testcafe/testcafe", "chromium:headless --no-sandbox", "--skip-js-errors" ]
+  args: [ "run", "--volume", "/workspace/testcafe/tests_container_ip:/tests", "--rm", "testcafe/testcafe", "chromium:headless --no-sandbox", "--skip-js-errors" ]
 
 # Copy ModSecurity Logs:
 - id: 'Copy ModSecurity logs'
