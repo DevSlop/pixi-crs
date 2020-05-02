@@ -41,7 +41,7 @@ phases:
     commands:
       # Fail if ModSecurity log is not empty
       # Show ModSecurity logs of Testcafe Tests
-      - docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep error | grep -vi "MyEvilWAFTest" | grep -v "949110" | grep -vi "98013x" && echo "False Positive Found. Check Logs. Aborting!" && exit 1 || exit 0
+      - docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep error | grep -vi "MyEvilWAFTest" | grep -v "949110" | grep -vi "980130" && echo "False Positive Found. Check Logs. Aborting!" && exit 1 || exit 0
 
       # If not empty -> Repair your application OR
       #              -> ModSecurity Tuning:
