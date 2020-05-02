@@ -46,7 +46,7 @@ steps:
 # That means CRS is not working properly or test was aborted.
 - id: 'Fail if ModSecurity log does not contain WAF Test String'
   name: 'ubuntu'
-  args: [ "cat", "/workspace/error.log | grep -q MyEvilWAFTest" ]
+  args: [ "cat", "/workspace/error.log", "| grep -q MyEvilWAFTest" ]
 
 # Fail if ModSecurity log is not empty
 # Show ModSecurity logs of Testcafe Tests
