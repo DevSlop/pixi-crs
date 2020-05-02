@@ -25,8 +25,8 @@ phases:
       - chmod +x ~/docker-compose
       - mv ~/docker-compose /usr/local/bin/docker-compose
       - docker-compose -v
-      - cat compose.env
-      - docker-compose --env-file compose.env up -d
+      - cat compose-aws.env
+      - docker-compose --env-file compose-aws.env up -d
 
       # Application Tests with Testcafe
       # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
