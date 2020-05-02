@@ -60,8 +60,13 @@ steps:
 # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
 #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
 - id: 'Fail if ModSecurity log is not empty'
-  name: 'ubuntu'
-  args: [ 'cat /workspace/error.log grep ModSecurity | grep error | grep -vi MyEvilWAFTest | grep -v 949110 | grep -v 980130 && exit 1 || exit 0' ]
+  name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+        cat /workspace/error.log grep ModSecurity | grep error | grep -vi MyEvilWAFTest | grep -v 949110 | grep -v 980130 && exit 1 || exit 0
+
 #- id: 'Fail if ModSecurity log is not empty'
 #  name: 'gcr.io/cloud-builders/docker'
 #  args: [ 'exec', 'crs', 'cat /var/log/apache2/error.log | grep ModSecurity | grep error | grep -vi "MyEvilWAFTest" | grep -v "949110" | grep -vi "980130" && exit 1 || exit 0' ]
