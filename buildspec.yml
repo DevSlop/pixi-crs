@@ -53,3 +53,5 @@ phases:
 
       # Show ModSecurity Full Logs:
       - docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep msg
+
+
