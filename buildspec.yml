@@ -1,0 +1,56 @@
+# AWS buildspec.yml
+#
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+
+  build:
+    commands:
+      # We install testcafe. We don't run it in Docker, because volumes can not be mounted!
+      # They probably could be mounted in a docker-compose, but let's run testcafe another way...
+      - npm install -g testcafe
+      # Start the OWASP ModSecurity Core Rule Set and Pixi with its DB with docker-compose
+      # OWASP ModSecurity Core Rule Set Container (Apache Reverse Proxy)
+      # owasp/modsecurity-crs
+      # See https://coreruleset.org/
+      # ModSecurity Tuning:
+      # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
+
+      # We have to install a higher version of docker-compose manually
+      # so that --env-file is available
+      # Unfortunately -e does not work, even with a higer docker-compose version
+      - curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+      - chmod +x ~/docker-compose
+      - mv ~/docker-compose /usr/local/bin/docker-compose
+      - docker-compose -v
+      - cat compose.env
+      - docker-compose --env-file compose.env up -d
+
+      # Application Tests with Testcafe
+      # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
+      - testcafe "chrome:headless" testcafe/tests_localhost/test.js --skip-js-errors
+      # Application Tests with CRS with Testcafe
+      - testcafe "chrome:headless" testcafe/tests_localhost/testcrs.js --skip-js-errors
+      # WAF Tests with malicous request to test WAF itself
+      - testcafe "chrome:headless" testcafe/tests_localhost/testwaf.js --skip-js-errors
+
+  post_build:
+    commands:
+      # Fail if ModSecurity log is not empty
+      # Show ModSecurity logs of Testcafe Tests
+      - docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep error | grep -vi "MyEvilWAFTest" | grep -v "949110" | grep -vi "98013x" && echo "False Positive Found. Check Logs. Aborting!" && exit 1 || exit 0
+
+      # If not empty -> Repair your application OR
+      #              -> ModSecurity Tuning:
+      # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
+      #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
+              
+      # Fail if ModSecurity log does not contain WAF Test String "MyEvilWAFTest"
+      # That means CRS is not working properly or test was aborted.
+      - docker exec crs cat /var/log/apache2/error.log | grep -q MyEvilWAFTest
+
+      # Show ModSecurity Full Logs:
+      - docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep msg
+
