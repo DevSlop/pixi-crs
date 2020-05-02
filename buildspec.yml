@@ -8,6 +8,7 @@ phases:
 
   build:
     commands:
+      - docker version
       # We install testcafe. We don't run it in Docker, because volumes can not be mounted!
       # They probably could be mounted in a docker-compose, but let's run testcafe another way...
       - npm install -g testcafe
