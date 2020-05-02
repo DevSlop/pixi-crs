@@ -1,0 +1,68 @@
+# Google Cloud cloudbuild.yaml
+#
+steps:
+# Start the OWASP ModSecurity Core Rule Set and Pixi with its DB with docker-compose
+# OWASP ModSecurity Core Rule Set Container (Apache Reverse Proxy)
+# owasp/modsecurity-crs
+# See https://coreruleset.org/
+# ModSecurity Tuning:
+# See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
+- id: 'Starting Pixi and CRS with docker-compose up'
+  name: 'docker/compose:1.19.0'
+  args: ['up', '-d']
+
+# Debugging possibilities
+#- name: 'ubuntu'
+#  args: [ "touch", "foo" ]
+#- name: 'ubuntu'
+#  args: [ "ls", "-l", "/workspace/testcafe/tests" ]
+#- name: 'ubuntu'
+#  args: [ "pwd" ]
+# Debugging with curl
+#- name: 'curlimages/curl:7.69.0'
+#  args: [ "-v", "http://172.17.0.1:8000/register"]
+#- name: 'curlimages/curl:7.69.0'
+#  args: [ "-v", "http://172.17.0.1:8080/register"]
+
+# Application Tests with Testcafe
+# skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
+- id: 'Run Testcafe Tests: Pixi without and with CRS'
+  name: 'gcr.io/cloud-builders/docker'
+  args: [ "run", "--volume", "/workspace/testcafe/tests:/tests", "--rm", "testcafe/testcafe", "chromium:headless --no-sandbox", "--skip-js-errors" ]
+
+# Copy ModSecurity Logs:
+- id: 'Copy ModSecurity logs'
+  name: 'gcr.io/cloud-builders/docker'
+ # args: [ "exec", "crs", "cat /var/log/apache2/error.log | grep ModSecurity" ]
+  args: [ "cp", "crs:/var/log/apache2/error.log", "/workspace/error.log" ]
+
+# Show ModSecurity Logs
+- id: 'Show ModSecurity logs'
+  name: 'ubuntu'
+  args: [ "cat", "/workspace/error.log" ]
+
+# ModSecurity Log Analysis:
+# Fail if ModSecurity log does not contain WAF Test String "MyEvilWAFTest"
+# That means CRS is not working properly or test was aborted.
+- id: 'Fail if ModSecurity log does not contain WAF Test String'
+  name: 'ubuntu'
+  args: [ "cat", "/workspace/error.log | grep -q MyEvilWAFTest" ]
+
+# Fail if ModSecurity log is not empty
+# Show ModSecurity logs of Testcafe Tests
+# If not empty -> Repair your application OR
+#              -> ModSecurity Tuning:
+# See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
+#              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
+- id: 'Fail if ModSecurity log is not empty'
+  name: 'ubuntu'
+  args: [ 'cat /workspace/error.log grep ModSecurity | grep error | grep -vi MyEvilWAFTest | grep -v 949110 | grep -v 980130 && exit 1 || exit 0' ]
+#- id: 'Fail if ModSecurity log is not empty'
+#  name: 'gcr.io/cloud-builders/docker'
+#  args: [ 'exec', 'crs', 'cat /var/log/apache2/error.log | grep ModSecurity | grep error | grep -vi "MyEvilWAFTest" | grep -v "949110" | grep -vi "980130" && exit 1 || exit 0' ]
+
+
+# Debugging docker
+#- id: 'Docker'
+#  name: 'gcr.io/cloud-builders/docker'
+#  args: [ "ps" ]
