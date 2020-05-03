@@ -30,7 +30,6 @@ test('Search String in Search Box WITH CRS', async t => {
         .pressKey('enter')
 });
 
-/*
 test('Click About WITH CRS', async t => {
     await t
         .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-4 > a:nth-child(3) > button')
@@ -54,7 +53,6 @@ test('Click My Profile and change Name WITH CRS', async t => {
         .typeText('input#name', 'testuser')
         .pressKey('enter')
 });
-*/
 
 test('Logout User WITH CRS', async t => {
     await t

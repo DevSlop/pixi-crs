@@ -32,7 +32,7 @@ test('Search String in Search Box', async t => {
         .pressKey('enter')
         //.expect('body > div > div:nth-child(12) > div > div.card-deck')
 });
-/*
+
 test('Click About', async t => {
     await t
         .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-4 > a:nth-child(3) > button')
@@ -57,7 +57,6 @@ test('Click My Profile and change Name', async t => {
         .typeText('input#name', 'testuser')
         .pressKey('enter')
 });
-*/
 
 test('Logout User', async t => {
     await t
