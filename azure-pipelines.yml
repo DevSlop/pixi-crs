@@ -49,7 +49,7 @@ stages:
       #              -> ModSecurity Tuning:
       # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
       #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
-      - script: if docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep -vi MyEvilWAFTest | grep -v 949110 | grep -v 980130 | grep msg; then echo "False Positive Found! Aborting!" && exit 1 ; else echo "ModSecurity Logs empty. This is good!"; fi
+      - script: if docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep -vi MyEvilWAFTest | grep -v 94911x | grep -v 980130 | grep msg; then echo "False Positive Found! Aborting!" && exit 1 ; else echo "ModSecurity Logs empty. This is good!"; fi
         displayName: Fail if ModSecurity logs are not empty
 
       # Fail if ModSecurity log does not contain WAF Test String "MyEvilWAFTest"
