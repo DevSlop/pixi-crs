@@ -63,10 +63,3 @@ test('Logout User WITH CRS', async t => {
         .click('body > div > div:nth-child(1) > div.col-md-7 > ul > li:nth-child(4) > a')
 });
 
-// Test WAF with a malicious string
-test('WAF Test with malicious string', async t => {
-    await t
-        .typeText('input#email', 'test@test>')
-        .typeText('input#password', '<script>alert("My evil WAF Test");</script>')
-        .click('body > div.jumbotron.jumbotron-fluid > div > div:nth-child(5) > div.col-8 > form > button')
-});
