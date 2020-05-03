@@ -38,8 +38,13 @@ steps:
 
 # Show ModSecurity Logs
 - id: 'Show ModSecurity logs'
-  name: 'ubuntu'
-  args: [ "cat", "/workspace/error.log" ]
+  name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+        cat /workspace/error.log
+
 
 # ModSecurity Log Analysis:
 # Fail if ModSecurity log does not contain WAF Test String "MyEvilWAFTest"
@@ -65,7 +70,7 @@ steps:
   args:
     - "-c"
     - |
-        cat /workspace/error.log | grep ModSecurity | grep error | grep -vi MyEvilWAFTest | grep -v 94911x | grep -v 980130 && exit 1 || exit 0"
+        cat /workspace/error.log | grep ModSecurity | grep error | grep -vi MyEvilWAFTest | grep -v 949110 | grep -v 980130 && exit 1 || exit 0"
 
 #- id: 'Fail if ModSecurity log is not empty'
 #  name: 'gcr.io/cloud-builders/docker'
