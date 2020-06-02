@@ -16,6 +16,34 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
-      - name: Build the docker-compose stack
-        run: docker-compose -f docker-compose.yml --env-file compose-gcp.env up -d
+#      - name: Debugging 
+#        run: pwd
+#      - name: Debugging 
+#        run: ls
 
+      - name: Starting Pixi and CRS with docker-compose up
+        run: docker-compose -f docker-compose.yaml --env-file compose-gcp.env up -d
+
+        # Application Tests with Testcafe
+        # skip-js-errors because of: Uncaught Error: Bootstrap tooltips require Tether
+      - name: Run Testcafe Tests Pixi without and with CRS
+        run: docker run --volume /home/runner/work/pixi-crs/pixi-crs/testcafe/tests_container_ip:/tests --rm testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox'
+
+        # Show Full error.log
+      - name: Show ModSecurity logs
+        run: docker exec crs cat /var/log/apache2/error.log
+
+        # ModSecurity Log Analysis:
+        # Fail if ModSecurity log is not empty
+        # Show ModSecurity logs of Testcafe Tests
+        # If not empty -> Repair your application OR
+        #              -> ModSecurity Tuning:
+        # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/ OR
+        #              -> GitHub issue: https://github.com/SpiderLabs/owasp-modsecurity-crs
+      - name: Fail if ModSecurity logs are not empty
+        run: if docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep -vi MyEvilWAFTest | grep -v 949110 | grep -v 980130 | grep msg; then echo "False Positive Found! Aborting!" && exit 1 ; else echo "ModSecurity Logs empty. This is good!"; fi
+
+        # Fail if ModSecurity log does not contain WAF Test String "MyEvilWAFTest"
+        # That means CRS is not working properly or test was aborted.
+      - name: Fail if WAF Test String is missing in ModSecurity logs
+        run: if docker exec crs cat /var/log/apache2/error.log | grep ModSecurity | grep MyEvilWAFTest; then echo "WAF Test String Found. This is good!"; else echo "WAF Test String not Found! Aborting!" && exit 1; fi
