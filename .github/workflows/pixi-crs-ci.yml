@@ -23,6 +23,6 @@ jobs:
       - name: Starting Pixi and CRS with docker-compose up
         run: docker-compose -f docker-compose.yaml --env-file compose-gcp.env up -d
 
-      - name: Run Testcafe Tests: Pixi without and with CRS
+      - name: Run Testcafe Tests Pixi without and with CRS
         run: docker run --volume testcafe/tests_container_ip:/tests --rm testcafe/testcafe --skip-js-errors 'chromium:headless --no-sandbox'
 
