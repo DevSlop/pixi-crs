@@ -1,12 +1,8 @@
 name: Pixi-CRS CI Pipeline
 
-on:
+on: [push, pull_request]
   # Trigger the workflow on push,
   # but only for the master branch
-  push:
-    branches:
-      - master
-      - github-actions
 
 jobs:
   build:
