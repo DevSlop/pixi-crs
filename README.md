@@ -8,7 +8,8 @@ Currently the following Pipelines are implemented:
 * CircleCI
 * AWS
 * Google Cloud Provider
-* Azure (not yet finished)
+* Azure Pipeline
+* GitHub Actions
 
 The CI Pipelines test (with TestCafe) DevSlop's vulnerable web application Pixi without and with the CRS.
 
