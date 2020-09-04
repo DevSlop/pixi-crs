@@ -21,7 +21,7 @@ phases:
       # We have to install a higher version of docker-compose manually
       # so that --env-file is available
       # Unfortunately -e does not work, even with a higer docker-compose version
-      - curl -L https://github.com/docker/compose/releases/download/1.25.5/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+      - curl -L https://github.com/docker/compose/releases/download/1.26.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
       - chmod +x ~/docker-compose
       - mv ~/docker-compose /usr/local/bin/docker-compose
       - docker-compose -v

@@ -8,7 +8,7 @@ steps:
 # ModSecurity Tuning:
 # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
 - id: 'Starting Pixi and CRS with docker-compose up'
-  name: 'docker/compose:1.25.5'
+  name: 'docker/compose:1.26.2'
   args: ['--env-file', '/workspace/compose-gcp.env', 'up', '-d']
 
 # Debugging possibilities
