@@ -7,7 +7,7 @@ services:
     image: owasp/modsecurity-crs:v3.2-modsec2-apache
     container_name: crs
     ports:
-# 443 is already in use
+      # 443 is already in use
       - "${CRSPORTHTTP}:80"
       #- "8443:443" NOT USED FOR TESTS
 
