@@ -21,6 +21,8 @@ services:
       - ANOMALYOUT=1
       # Executing Paranoia Level
       # - EXECUTING_PARANOIA=2
+      # Write errorlog to filesystem instead of stdout for later analysis
+      - ERRORLOG=${ERRORLOG}
 
       # Various CRS Variables with Default Values
       #- ENFORCE_BODYPROC_URLENCODED=1

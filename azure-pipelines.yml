@@ -28,6 +28,7 @@ stages:
           dockerComposeFileArgs: |
             CRSPORTHTTP=8080
             BACKEND=http://app:8000
+            ERRORLOG=/var/log/apache2/error.log
           dockerComposeCommand: 'up -d'
 
       # Application Tests with Testcafe
