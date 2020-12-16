@@ -4,7 +4,7 @@ services:
 
 # Comment in crs part if you want to add a WAF in front of Pixi:
   crs:
-    image: owasp/modsecurity-crs:v3.2-modsec2-apache
+    image: owasp/modsecurity-crs:3.3-apache
     container_name: crs
     ports:
       # 443 is already in use
@@ -13,7 +13,7 @@ services:
 
     environment:
       # Application Backend listens on port 8000 (IP: REPLACEME, but do not use localhost!)
-      - PROXYLOCATION=${PROXYLOCATION}
+      - BACKEND=${BACKEND}
       # Paranoia Level
       - PARANOIA=2
       # Inbound and Outbound Anomaly Score Threshold
@@ -21,6 +21,8 @@ services:
       - ANOMALYOUT=1
       # Executing Paranoia Level
       # - EXECUTING_PARANOIA=2
+      # Write errorlog to filesystem instead of stdout for later analysis
+      - ERRORLOG=${ERRORLOG}
 
       # Various CRS Variables with Default Values
       #- ENFORCE_BODYPROC_URLENCODED=1
