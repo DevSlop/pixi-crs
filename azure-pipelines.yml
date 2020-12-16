@@ -27,7 +27,7 @@ stages:
           action: 'Run a Docker Compose command'
           dockerComposeFileArgs: |
             CRSPORTHTTP=8080
-            PROXYLOCATION=http://app:8000/
+            BACKEND=http://app:8000
           dockerComposeCommand: 'up -d'
 
       # Application Tests with Testcafe
