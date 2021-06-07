@@ -17,18 +17,19 @@ By adding and testing the WAF in the Continuous Integration (CI) pipeline, we pr
 
 ## Building Blocks of the pixi-crs Pipelines and how they are implemented
 
-|               | CircleCI             | AWS                   | GCP                   | Azure                 |
-| ------------- | -------------------- | --------------------- | -------------         | --------------------- |
-| Code File     | .circleci/config.yml | buildspec.yml         | cloudbuild.yaml       | azure-pipelines.yml   |
-| Start Pixi    | docker-compose up    | docker-compose up     | docker-compose up     | docker-compose up     |
-| Start CRS     | docker run           | same docker-compose   | same docker-compose   | same docker-compose   |
-| ModSec Tuning | docker cp            | Volume docker-compose | Volume docker-compose | Volume docker-compose |
-| Start Testcafe| Testcafe Docker      | npm install testcafe  | Testcafe Docker       | coming soon           |
-| Log Analysis  | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | coming soon    |
+|               | CircleCI             | AWS                   | GCP                   | Azure                    | GitHub Actions        |
+| ------------- | -------------------- | --------------------- | -------------         | ------------------------ | --------------------- |
+| Code File     | .circleci/config.yml | buildspec.yml         | cloudbuild.yaml       | azure-pipelines.yml      | .github/workflows/pixi-crs-ci.yml |
+| Start Pixi    | docker-compose up    | docker-compose up     | docker-compose up     | docker-compose up        | docker-compose up     |
+| Start CRS     | docker run           | same docker-compose   | same docker-compose   | same docker-compose      | same docker-compose   |
+| ModSec Tuning | docker cp            | Volume docker-compose | Volume docker-compose | Volume docker-compose    | Volume docker-compose |
+| Start Testcafe| Testcafe Docker      | npm install testcafe  | Testcafe Docker       | Testcafe Docker          | Testcafe Docker       |
+| Log Analysis  | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile|
 
 ## Further Reading
 
 ### Description of the CI Pipeline
+* [Pixi-CRS goes to the Cloud: 6 part blog posts series](https://dev.to/franbuehler/series/5552)
 * [DevSlop Blog Post on dev.to describing the CircleCI pixi-crs Pipeline](https://dev.to/devslop/devslop-s-pixi-crs-pipeline-4bie) 
 * [DevSlop Blog Post on dev.to describing how the CRS protects Pixi](https://dev.to/devslop/how-the-owasp-modsecurity-core-rule-set-protects-the-vulnerable-web-application-pixi-by-owasp-devslop-n4d)
 
