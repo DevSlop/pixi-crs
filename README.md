@@ -1,6 +1,6 @@
-# DevSlop pixi-crs - Integration of OWASP ModSecurity CRS into a CI Pipeline     
+# DevSlop Pixi-Crs - Integration of OWASP ModSecurity CRS into a CI Pipeline     
 
-This repository is one of DevSlop's modules as described in [devslop.github.io](https://devslop.github.io).  
+This repository is one of DevSlop's modules as described in [https://devslop.co/](https://devslop.co/).  
 
 This repository integrates the WAF ModSecurity with the OWASP ModSecurity Core Rule Set (CRS) and its testing into different CI Pipelines.  
 Currently the following Pipelines are implemented:
