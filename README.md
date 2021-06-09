@@ -26,6 +26,15 @@ By adding and testing the WAF in the Continuous Integration (CI) pipeline, we pr
 | Start Testcafe| Testcafe Docker      | npm install testcafe  | Testcafe Docker       | Testcafe Docker          | Testcafe Docker       |
 | Log Analysis  | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile | docker exec cat logfile|
 
+## Local Startup of Pixi and CRS
+
+If you want to start Pixi and the CRS locally you can run:
+
+`docker-compose --env-file compose-local.env up -d`
+
+Then you can reach Pixi directly: http://localhost:8000/.
+And the WAF with Pixi as the backend: http://localhost:8080/.
+
 ## Further Reading
 
 ### Description of the CI Pipeline
