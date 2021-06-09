@@ -54,9 +54,10 @@ jobs:
              docker run -dt --name crs -e PARANOIA=2 \
              -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
              ANOMALY_INBOUND=1 -e ANOMALY_OUTBOUND=1 -e BACKEND=http://172.17.0.1:8000 \
+             -e ERRORLOG=/var/log/apache2/error.log \
              --expose 80 owasp/modsecurity-crs:v3.3.0-apache
 
-      # ModSecurity Tuning:
+      # ModSecurity Tuning:\
       # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
       # We use rule exclusion example files:
       # REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf OR
