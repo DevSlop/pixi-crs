@@ -66,6 +66,9 @@ jobs:
           name: ModSecurity Tuning - Load rule exclusions
           command: |
             docker cp RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf crs:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf;
+            docker exec crs ls -l /var/log;
+            docker exec crs ls -l /var/log/apache2;
+            docker exec crs ls -l /var/log/apache2/error.log;
             docker exec crs /usr/local/apache2/bin/apachectl -f /usr/local/apache2/conf/httpd.conf -k graceful
 
        # Debugging possibilities:
