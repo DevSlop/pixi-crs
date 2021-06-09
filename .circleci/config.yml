@@ -53,7 +53,7 @@ jobs:
              docker pull owasp/modsecurity-crs:v3.3.0-apache && \
              docker run -dt --name crs -e PARANOIA=2 \
              -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
-             ANOMALY_INBOUND=1 -e ANOMALY_OUTBOUND=1 -e BACKEND=http://172.17.0.1:8000/ \
+             ANOMALY_INBOUND=1 -e ANOMALY_OUTBOUND=1 -e BACKEND=http://172.17.0.1:8000 \
              --expose 80 owasp/modsecurity-crs:v3.3.0-apache
 
       # ModSecurity Tuning:
