@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Install Docker Compose
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.26.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            curl -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
 
@@ -50,13 +50,14 @@ jobs:
            # we set inbound and outbound anomaly score to 1, no tolerance
            # We have to expose the port here, port mapping is not supported in CircleCI 
            command: |
-             docker pull owasp/modsecurity-crs:v3.2-modsec2-apache && \
+             docker pull owasp/modsecurity-crs:v3.3.0-apache && \
              docker run -dt --name crs -e PARANOIA=2 \
              -e ALLOWED_METHODS='GET HEAD POST OPTIONS PUT' -e \
-             ANOMALYIN=1 -e ANOMALYOUT=1 -e PROXYLOCATION=http://172.17.0.1:8000/ \
-             --expose 80 owasp/modsecurity-crs:v3.2-modsec2-apache
+             ANOMALY_INBOUND=1 -e ANOMALY_OUTBOUND=1 -e BACKEND=http://172.17.0.1:8000 \
+             -e ERRORLOG=/var/log/apache2/error.log \
+             --expose 80 owasp/modsecurity-crs:v3.3.0-apache
 
-      # ModSecurity Tuning:
+      # ModSecurity Tuning:\
       # See https://www.netnea.com/cms/apache-tutorial-8_handling-false-positives-modsecurity-core-rule-set/
       # We use rule exclusion example files:
       # REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf OR
