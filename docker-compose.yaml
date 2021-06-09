@@ -17,8 +17,8 @@ services:
       # Paranoia Level
       - PARANOIA=2
       # Inbound and Outbound Anomaly Score Threshold
-      - ANOMALYIN=1
-      - ANOMALYOUT=1
+      # - ANOMALY_INBOUND=5
+      # - ANOMALY_OUTBOUND=4
       # Executing Paranoia Level
       # - EXECUTING_PARANOIA=2
       # Write errorlog to filesystem instead of stdout for later analysis
@@ -27,7 +27,7 @@ services:
       # Various CRS Variables with Default Values
       #- ENFORCE_BODYPROC_URLENCODED=1
       - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT
-      #- ALLOWED_REQUEST_CONTENT_TYPE=application/x-www-form-urlencoded|multipart/form-data|text/xml|application/xml|application/soap+xml|application/x-amf|application/json|application/octet-stream|text/plain
+      #- ALLOWED_REQUEST_CONTENT_TYPE=|application/x-www-form-urlencoded| |multipart/form-data| |multipart/related| |text/xml| |application/xml| |application/soap+xml| |application/x-amf| |application/json| |application/cloudevents+json| |application/cloudevents-batch+json| |application/octet-stream| |application/csp-report| |application/xss-auditor-report| |text/plain|
       #- ALLOWED_REQUEST_CONTENT_TYPE_CHARSET=utf-8|iso-8859-1|iso-8859-15|windows-1252
       #- ALLOWED_HTTP_VERSIONS=HTTP/1.0 HTTP/1.1 HTTP/2 HTTP/2.0
       #- RESTRICTED_EXTENSIONS=.asa/ .asax/ .ascx/ .axd/ .backup/ .bak/ .bat/ .cdx/ .cer/ .cfg/ .cmd/ .com/ .config/ .conf/ .cs/ .csproj/ .csr/ .dat/ .db/ .dbf/ .dll/ .dos/ .htr/ .htw/ .ida/ .idc/ .idq/ .inc/ .ini/ .key/ .licx/ .lnk/ .log/ .mdb/ .old/ .pass/ .pdb/ .pol/ .printer/ .pwd/ .resources/ .resx/ .sql/ .sys/ .vb/ .vbs/ .vbproj/ .vsdisco/ .webinfo/ .xsd/ .xsx/
